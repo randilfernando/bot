@@ -1,0 +1,7 @@
+DROP TABLE IF EXISTS responses;
+
+CREATE TABLE responses (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  intent TEXT UNIQUE NOT NULL,
+  response TEXT NOT NULL
+);

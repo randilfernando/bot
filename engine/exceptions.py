@@ -1,0 +1,2 @@
+class IntentNotAvailable(Exception):
+    pass
