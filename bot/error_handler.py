@@ -11,10 +11,10 @@ def init_app(app):
     def not_found(e):
         data = {'status': 404, 'message': 'Not Found'}
         res = jsonify(data)
-        return res
+        return res, 404
 
     @app.errorhandler(400)
     def bad_request(e):
         data = {'status': 400, 'message': 'Bad Request'}
         res = jsonify(data)
-        return res
+        return res, 400

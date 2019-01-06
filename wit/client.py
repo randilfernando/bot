@@ -9,8 +9,7 @@ headers = {}
 
 builtin_intents = {
     'greetings': 'greet',
-    'thanks': 'thank',
-    'bye': 'exit'
+    'bye': 'bye'
 }
 
 
@@ -39,20 +38,23 @@ def get_intents():
     return response.json()['values']
 
 
-def add_intent(value):
+def add_intent(intent):
+    if intent in builtin_intents.values():
+        return
+
     response = requests.post('https://api.wit.ai/entities/intent/values',
                              params=params,
                              headers=headers,
                              json={
-                                 'value': value
+                                 'value': intent
                              })
 
     if response.status_code != 200:
         raise APIException
 
 
-def add_expression(value, expression):
-    response = requests.post('https://api.wit.ai/entities/intent/values/%s/expressions' % value,
+def add_expression(intent, expression):
+    response = requests.post('https://api.wit.ai/entities/intent/values/%s/expressions' % intent,
                              params=params,
                              headers=headers,
                              json={
@@ -63,8 +65,8 @@ def add_expression(value, expression):
         raise APIException
 
 
-def remove_expression(value, expression):
-    response = requests.delete('https://api.wit.ai/entities/intent/values/%s/expressions/%s' % (value, expression),
+def remove_expression(intent, expression):
+    response = requests.delete('https://api.wit.ai/entities/intent/values/%s/expressions/%s' % (intent, expression),
                                params=params,
                                headers=headers)
 

@@ -1,5 +1,5 @@
-from database.db import get_db
-from engine.exceptions import IntentNotAvailable
+from bot.db import get_db
+from bot.exceptions import IntentNotAvailable
 from wit import client
 from wit.exceptions import APIException
 
@@ -18,7 +18,7 @@ def init_app(app):
     }
 
 
-def init_engine():
+def init_bot():
     global intents, threshold
 
     intents = {}
@@ -70,11 +70,11 @@ def teach_response(intent, response):
         client.add_intent(intent)
 
 
-def ask_question(question, mode):
+def ask_question(question, suggestions = 'enabled'):
     intent = client.get_message_intent(question)
 
     if intent['value'] != 'unidentified' and \
-            mode == 'suggest' and \
+            suggestions == 'enabled' and \
             intent['confidence'] < threshold:
         return {
             'type': 'suggestion',

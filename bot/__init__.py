@@ -25,7 +25,7 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    from database import db
+    from . import db
     # bind db object with newly created flask application
     db.init_app(app)
 
@@ -33,16 +33,16 @@ def create_app(test_config=None):
     # bind error handler with newly created flask application
     error_handler.init_app(app)
 
-    from . import bot
+    from . import api
     # bind api with newly created flask application
-    app.register_blueprint(bot.bp)
+    app.register_blueprint(api.bp)
 
-    from engine import engine
+    from . import engine
     # bind engine with newly created flask application
     engine.init_app(app)
     # initialize engine
 
     with app.app_context():
-        engine.init_engine()
+        engine.init_bot()
 
     return app
