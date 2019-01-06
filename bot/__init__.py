@@ -15,9 +15,12 @@ def create_app(test_config=None):
 
     app.config.from_pyfile('config.py', silent=True)
 
-    app.config.from_mapping(
-        WIT_TOKEN=os.environ['WIT_TOKEN']
-    )
+    try:
+        app.config.from_mapping(
+            WIT_TOKEN=os.environ['WIT_TOKEN']
+        )
+    except KeyError:
+        pass
 
     if test_config is not None:
         app.config.from_mapping(test_config)
