@@ -1,3 +1,5 @@
+from builtins import KeyError, OSError
+
 import os
 
 from flask import Flask
