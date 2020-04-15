@@ -1,6 +1,4 @@
-from psycopg2.extras import DictCursor
-
-from bot.db import get_db
+from bot.db import query_all, query_one, execute
 from bot.exceptions import IntentNotAvailable
 from wit import client
 from wit.exceptions import APIException
@@ -30,7 +28,7 @@ def init_bot():
     for value in client.get_intents():
         intents[value['value']] = value['expressions']
 
-    db_intents = get_db().execute('SELECT intent FROM responses').fetchall()
+    db_intents = query_all('SELECT intent FROM responses', ())
 
     for db_intent in db_intents:
         if db_intent['intent'] not in intents.keys():
@@ -51,28 +49,15 @@ def teach_expression(intent, expression):
 
 
 def teach_response(intent, response):
-    entry = get_db().execute('SELECT id FROM responses WHERE intent = ?', (
-        intent,
-    )).fetchone()
-
-    if entry is not None:
-        get_db().execute('UPDATE responses SET response = ? WHERE intent = ?', (
-            response,
-            intent
-        ))
-    else:
-        get_db().execute('INSERT INTO responses(intent, response) VALUES (?, ?)', (
-            intent,
-            response,
-        ))
-        get_db().commit()
+    execute('INSERT INTO responses(intent, response) VALUES (?, ?) '
+            'ON CONFLICT(intent) DO UPDATE SET response = ?', (intent, response, response))
 
     if intent not in intents.keys():
         intents[intent] = []
         client.add_intent(intent)
 
 
-def ask_question(question, suggestions = 'enabled'):
+def ask_question(question, suggestions='enabled'):
     intent = client.get_message_intent(question)
 
     if intent['value'] != 'unidentified' and \
@@ -83,9 +68,7 @@ def ask_question(question, suggestions = 'enabled'):
             'suggestions': intents[intent['value']]
         }
     else:
-        cur = get_db().cursor(cursor_factory=DictCursor)
-        cur.execute('SELECT response FROM responses WHERE intent = ?', (intent['value']))
-        entry = cur.fetchone()
+        entry = query_one('SELECT response FROM responses WHERE intent = ?', (intent['value'],))
 
         if entry is not None and entry['response'] != '':
             return {
@@ -119,9 +102,7 @@ def get_intent(intent):
     if intent in intents.keys():
         data['expressions'] = intents[intent]
 
-    entry = get_db().execute('SELECT response FROM responses WHERE intent = ?', (
-        intent,
-    )).fetchone()
+    entry = query_one('SELECT response FROM responses WHERE intent = ?', (intent,))
 
     if entry is not None:
         data['response'] = entry['response']

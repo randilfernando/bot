@@ -13,12 +13,12 @@ bp = Blueprint('bot', __name__, url_prefix='/bot')
 
 
 @bp.route('/intents', methods=['GET'])
-def gis():
+def get_intents():
     return jsonify(engine.get_intents())
 
 
 @bp.route('/intents/<intent>', methods=['GET'])
-def gi(intent):
+def get_intent(intent):
     try:
         return jsonify(engine.get_intent(intent))
     except IntentNotAvailable:
@@ -26,7 +26,7 @@ def gi(intent):
 
 
 @bp.route('/intents/<intent>/responses', methods=['POST'])
-def tr(intent):
+def teach_response(intent):
     data = request.json
 
     if 'response' not in data:
@@ -38,7 +38,7 @@ def tr(intent):
 
 
 @bp.route('/intents/<intent>/expressions', methods=['POST'])
-def te(intent):
+def teach_expression(intent):
     data = request.json
 
     if 'expression' not in data:
@@ -53,7 +53,7 @@ def te(intent):
 
 
 @bp.route('/questions', methods=['POST'])
-def aq():
+def ask_question():
     data = request.json
 
     if 'question' not in data:

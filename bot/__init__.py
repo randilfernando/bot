@@ -1,6 +1,5 @@
-from builtins import KeyError, OSError
-
 import os
+from builtins import KeyError, OSError
 
 from flask import Flask
 
@@ -9,15 +8,17 @@ def create_app(test_config=None):
     # create and configure the bot
     app = Flask(__name__, instance_relative_config=True)
 
-    app.config.from_mapping(
-        WIT_VERSION='20170307',
-        INTENT_THRESHOLD=0.5
-    )
+    # ensure the instance folder exists
+    try:
+        os.makedirs(app.instance_path)
+    except OSError:
+        pass
 
     app.config.from_pyfile('config.py', silent=True)
 
     try:
         app.config.from_mapping(
+            WIT_VERSION=os.environ['WIT_VERSION'],
             WIT_TOKEN=os.environ['WIT_TOKEN'],
             DATABASE_URL=os.environ['DATABASE_URL']
         )
@@ -26,12 +27,6 @@ def create_app(test_config=None):
 
     if test_config is not None:
         app.config.from_mapping(test_config)
-
-    # ensure the instance folder exists
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
 
     from . import db
     # bind db object with newly created flask application
