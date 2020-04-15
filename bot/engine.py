@@ -1,3 +1,5 @@
+from psycopg2.extras import DictCursor
+
 from bot.db import get_db
 from bot.exceptions import IntentNotAvailable
 from wit import client
@@ -81,9 +83,9 @@ def ask_question(question, suggestions = 'enabled'):
             'suggestions': intents[intent['value']]
         }
     else:
-        entry = get_db().execute('SELECT response FROM responses WHERE intent = ?', (
-            intent['value'],
-        )).fetchone()
+        cur = get_db().cursor(cursor_factory=DictCursor)
+        cur.execute('SELECT response FROM responses WHERE intent = ?', (intent['value']))
+        entry = cur.fetchone()
 
         if entry is not None and entry['response'] != '':
             return {

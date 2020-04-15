@@ -10,7 +10,6 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
 
     app.config.from_mapping(
-        DATABASE=os.path.join(app.instance_path, 'bot.sqlite'),
         WIT_VERSION='20170307',
         INTENT_THRESHOLD=0.5
     )
@@ -19,7 +18,8 @@ def create_app(test_config=None):
 
     try:
         app.config.from_mapping(
-            WIT_TOKEN=os.environ['WIT_TOKEN']
+            WIT_TOKEN=os.environ['WIT_TOKEN'],
+            DATABASE_URL=os.environ['DATABASE_URL']
         )
     except KeyError:
         pass

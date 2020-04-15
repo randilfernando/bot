@@ -1,5 +1,6 @@
-import sqlite3
+from urllib.parse import urlparse
 
+import psycopg2
 from flask import current_app, g
 
 
@@ -14,11 +15,18 @@ def get_db():
     :return: database
     """
     if 'db' not in g:
-        g.db = sqlite3.connect(
-            current_app.config['DATABASE'],
-            detect_types=sqlite3.PARSE_DECLTYPES
+        result = urlparse(current_app.config['DATABASE_URL'])
+        username = result.username
+        password = result.password
+        database = result.path[1:]
+        hostname = result.hostname
+
+        g.db = psycopg2.connect(
+            database=database,
+            user=username,
+            password=password,
+            host=hostname
         )
-        g.db.row_factory = sqlite3.Row
 
     return g.db
 
