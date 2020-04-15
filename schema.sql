@@ -1,10 +1,9 @@
-CREATE TABLE public.response
+CREATE TABLE public.responses
 (
   id       serial PRIMARY KEY NOT NULL,
   intent   TEXT               NOT NULL,
   response TEXT
 );
-CREATE UNIQUE INDEX response_id_uindex
-  ON public.response (id);
-CREATE UNIQUE INDEX response_intent_uindex
-  ON public.response (intent);
+
+CREATE UNIQUE INDEX responses_intent_uindex
+  ON public.responses (intent);
