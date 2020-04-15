@@ -1,6 +1,4 @@
-DROP TABLE IF EXISTS intents;
-
-CREATE TABLE responses (
+CREATE TABLE if not exists responses (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   intent TEXT UNIQUE NOT NULL,
   response TEXT NOT NULL
